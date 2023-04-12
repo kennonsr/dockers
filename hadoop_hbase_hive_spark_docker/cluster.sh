@@ -13,6 +13,13 @@ function startServices {
   echo ">> Starting MR-JobHistory Server ..."
   docker exec -u hadoop -d nodemaster mr-jobhistory-daemon.sh start historyserver
   sleep 5
+    echo ">> Preparing hdfs for SPARK ..."
+  docker exec -u hadoop -it nodemaster hdfs dfs -mkdir -p /spark-jars
+  docker exec -u hadoop -it nodemaster hdfs dfs -mkdir -p /log/spark
+  docker exec -u hadoop -it nodemaster hdfs dfs -chmod g+w /spark-jars
+  docker exec -u hadoop -it nodemaster hdfs dfs -chmod g+w /log/spark
+  docker exec -u hadoop -it nodemaster hdfs dfs -copyFromLocal "/home/hadoop/spark/jars" "/spark-jars "
+  sleep 5
   echo ">> Starting Spark ..."
   docker exec -u hadoop -d nodemaster start-master.sh
   docker exec -u hadoop -d node2 start-slave.sh nodemaster:7077
@@ -48,11 +55,9 @@ function startServices {
   # echo ">> Starting Nifi Server ..."
   # docker exec -u hadoop -d nifi /home/hadoop/nifi/bin/nifi.sh start
   # echo ">> Starting kafka & Zookeeper ..."
-  # docker exec -u hadoop -d edge /home/hadoop/kafka/bin/zookeeper-server-start.sh -daemon  /home/hadoop/kafka/config/zookeeper.properties
-  # docker exec -u hadoop -d edge /home/hadoop/kafka/bin/kafka-server-start.sh -daemon  /home/hadoop/kafka/config/server.properties
-  echo ">> Starting Zeppelin ..."
-  docker exec -u hadoop -d zeppelin /home/hadoop/zeppelin/bin/zeppelin-daemon.sh start
-  sleep 5
+  docker exec -u hadoop -d edge /home/hadoop/kafka/bin/zookeeper-server-start.sh -daemon  /home/hadoop/kafka/config/zookeeper.properties
+  docker exec -u hadoop -d edge /home/hadoop/kafka/bin/kafka-server-start.sh -daemon  /home/hadoop/kafka/config/server.properties
+  
   echo "Hadoop info @ nodemaster: http://172.20.1.1:8088/cluster"
   echo "DFS Health @ nodemaster : http://172.20.1.1:50070/dfshealth"
   echo "MR-JobHistory Server @ nodemaster : http://172.20.1.1:19888"
@@ -61,7 +66,6 @@ function startServices {
   echo "Zookeeper @ hbase : http://172.20.1.9:2181"
   # echo "Kafka @ edge : http://172.20.1.5:9092"
   # echo "Nifi @ edge : http://172.20.1.5:8080/nifi & from host @ http://localhost:8080/nifi"
-  # echo "Zeppelin @ zeppelin : http://172.20.1.6:8081 & from host @ http://localhost:8081" 
   echo "HBASE @ hbase : http://172.20.1.9:16010 & from host @ http://localhost:16010"
 }
 
@@ -88,7 +92,7 @@ if [[ $1 = "install" ]]; then
   
   # 3 nodes
   echo ">> Starting master and worker nodes ..."
-  docker run -d --net hadoopnet --ip 172.20.1.1 -p 8088:8088 -p 50070:50070 -p 8080:8080 -p 18080:18080 --hostname nodemaster --add-host node2:172.20.1.2 --add-host node3:172.20.1.3 --add-host hbase:172.20.1.9 --name nodemaster -it sciencepal/hadoop_cluster:hive
+  docker run -d --net hadoopnet --ip 172.20.1.1 -p 4040:4040 -p 8088:8088 -p 50070:50070 -p 8080:8080 -p 18080:18080 --hostname nodemaster --add-host node2:172.20.1.2 --add-host node3:172.20.1.3 --add-host hbase:172.20.1.9 --name nodemaster -it sciencepal/hadoop_cluster:hive
   docker run -d --net hadoopnet --ip 172.20.1.2 --hostname node2 --add-host nodemaster:172.20.1.1 --add-host node3:172.20.1.3 --add-host hbase:172.20.1.9 --name node2 -it sciencepal/hadoop_cluster:spark
   docker run -d --net hadoopnet --ip 172.20.1.3 --hostname node3 --add-host nodemaster:172.20.1.1 --add-host node2:172.20.1.2 --add-host hbase:172.20.1.9 --name node3 -it sciencepal/hadoop_cluster:spark
   docker run -d --net hadoopnet --ip 172.20.1.5 --hostname edge --add-host nodemaster:172.20.1.1 --add-host node2:172.20.1.2 --add-host node3:172.20.1.3 --add-host psqlhms:172.20.1.4 --add-host hbase:172.20.1.9 --name edge -it sciencepal/hadoop_cluster:edge 
@@ -115,12 +119,12 @@ if [[ $1 = "uninstall" ]]; then
   stopServices
   docker network rm hadoopnet
   docker ps -a | grep "sciencepal" | awk '{print $1}' | xargs docker rm
-  docker rmi sciencepal/hadoop_cluster:hadoop sciencepal/hadoop_cluster:spark sciencepal/hadoop_cluster:hive sciencepal/hadoop_cluster:postgresql-hms sciencepal/hadoop_cluster:hue sciencepal/hadoop_cluster:edge sciencepal/hadoop_cluster:nifi sciencepal/hadoop_cluster:zeppelin sciencepal/hadoop_cluster:hbase -f
+  docker rmi sciencepal/hadoop_cluster:hadoop sciencepal/hadoop_cluster:spark sciencepal/hadoop_cluster:hive sciencepal/hadoop_cluster:postgresql-hms sciencepal/hadoop_cluster:hue sciencepal/hadoop_cluster:edge sciencepal/hadoop_cluster:nifi sciencepal/hadoop_cluster:hbase -f
   exit
 fi
 
 if [[ $1 = "start" ]]; then  
-  docker start psqlhms nodemaster node2 node3 hbase edge zeppelin
+  docker start psqlhms nodemaster node2 node3 hbase edge
 # docker start psqlhms nodemaster node2 node3 edge hue nifi zeppelin
   startServices
   exit
