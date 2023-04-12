@@ -7,9 +7,9 @@
 
 ## Services
 
-* [Hadoop 3.2.0](http://hadoop.apache.org/docs/r3.2.0/) HDFS in  Distributed (Multi-node) Mode
-* [Hive 2.3.4](http://hive.apache.org/) with HiveServer2
-* [Spark 2.4.5](https://spark.apache.org/docs/2.4.5/) in YARN mode (Spark Scala, and PySpark)
+* [Hadoop 3.3.1](http://hadoop.apache.org/docs/r3.3.1/) HDFS in  Distributed (Multi-node) Mode
+* [Hive 2.3.9](http://hive.apache.org/) with HiveServer2
+* [Spark 3.1.2](https://spark.apache.org/docs/3.1.2/) in YARN mode (Spark Scala, and PySpark)
 * [Hbase 2.4.15](https://hbase.apache.org/)  in Pseudo Distributed Mode on top of HDFS
 
 Also there is available an EDGE node to run conde/scripts
