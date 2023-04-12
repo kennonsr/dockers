@@ -2,7 +2,7 @@
 
 # Bring the services up
 function startServices {
-  docker start nodemaster node2 node3 hbase
+  docker start nodemaster node2 node3 hbase psqlhms
   sleep 5
   echo ">> Starting hdfs ..."
   docker exec -u hadoop -it nodemaster start-dfs.sh
@@ -18,7 +18,7 @@ function startServices {
   docker exec -u hadoop -it nodemaster hdfs dfs -mkdir -p /log/spark
   docker exec -u hadoop -it nodemaster hdfs dfs -chmod g+w /spark-jars
   docker exec -u hadoop -it nodemaster hdfs dfs -chmod g+w /log/spark
-  docker exec -u hadoop -it nodemaster hdfs dfs -copyFromLocal "/home/hadoop/spark/jars" "/spark-jars "
+  #docker exec -u hadoop -it nodemaster hdfs dfs -copyFromLocal "/home/hadoop/spark/jars" "/spark-jars "
   sleep 5
   echo ">> Starting Spark ..."
   docker exec -u hadoop -d nodemaster start-master.sh

@@ -41,6 +41,7 @@ RUN wget https://archive.apache.org/dist/spark/spark-$SPARK_VERSION/spark-$SPARK
 RUN tar -xzf /home/hadoop/spark-$SPARK_VERSION-bin-hadoop3.2.tgz -C /home/hadoop/
 RUN mv /home/hadoop/spark-$SPARK_VERSION-bin-hadoop3.2 /home/hadoop/spark
 RUN rm /home/hadoop/spark-$SPARK_VERSION-bin-hadoop3.2.tgz
+RUN wget https://repo1.maven.org/maven2/org/postgresql/postgresql/42.2.19/postgresql-42.2.19.jar -p /home/hadoop/spark/jars/
 
 
 RUN mkdir -p /home/hadoop/spark/logs
@@ -66,8 +67,8 @@ RUN echo "spark.history.fs.logDirectory file:/home/hadoop/spark/logs" >> /home/h
 RUN echo "spark.master spark://nodemaster:7077" >> /home/hadoop/spark/conf/spark-defaults.conf
 RUN echo "spark.sql.catalogImplementation hive" >> /home/hadoop/spark/conf/spark-defaults.conf
 RUN echo "spark.yarn.jars hdfs://nodemaster:9000/spark-jars/*" >> /home/hadoop/spark/conf/spark-defaults.conf
-RUN echo "spark.sql.hive.metastore.version 2.3.0" >> /home/hadoop/spark/conf/spark-defaults.conf
-RUN echo "spark.sql.hive.metastore.jars $(hadoop classpath)" >> /home/hadoop/spark/conf/spark-defaults.conf
+#RUN echo "spark.sql.hive.metastore.version 2.3.0" >> /home/hadoop/spark/conf/spark-defaults.conf
+#RUN echo "spark.sql.hive.metastore.jars $(hadoop classpath)" >> /home/hadoop/spark/conf/spark-defaults.conf
 ADD configs/hbase-site.xml /home/hadoop/spark/conf/
 ADD configs/hive-site.xml /home/hadoop/spark/conf/
 ADD configs/core-site.xml /home/hadoop/spark/conf/
