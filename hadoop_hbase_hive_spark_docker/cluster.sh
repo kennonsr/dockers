@@ -97,10 +97,8 @@ if [[ $1 = "install" ]]; then
   docker run -d --net hadoopnet --ip 172.20.1.3 --hostname node3 --add-host nodemaster:172.20.1.1 --add-host node2:172.20.1.2 --add-host hbase:172.20.1.9 --name node3 -it sciencepal/hadoop_cluster:spark
   docker run -d --net hadoopnet --ip 172.20.1.5 --hostname edge --add-host nodemaster:172.20.1.1 --add-host node2:172.20.1.2 --add-host node3:172.20.1.3 --add-host psqlhms:172.20.1.4 --add-host hbase:172.20.1.9 --name edge -it sciencepal/hadoop_cluster:edge 
   docker run -d --net hadoopnet --ip 172.20.1.9 -p 16010:16010 --hostname hbase --add-host nodemaster:172.20.1.1 --add-host node2:172.20.1.2 --add-host node3:172.20.1.3 --add-host psqlhms:172.20.1.4 --add-host hbase:172.20.1.9 --name hbase -it sciencepal/hadoop_cluster:hbase 
-  #docker run -d --net hadoopnet --ip 172.20.1.6 -p 8080:8080 --hostname nifi --add-host nodemaster:172.20.1.1 --add-host node2:172.20.1.2 --add-host node3:172.20.1.3 --add-host psqlhms:172.20.1.4 --name nifi -it sciencepal/hadoop_cluster:nifi 
   #docker run -d --net hadoopnet --ip 172.20.1.7  -p 8888:8888 --hostname huenode --add-host edge:172.20.1.5 --add-host nodemaster:172.20.1.1 --add-host node2:172.20.1.2 --add-host node3:172.20.1.3 --add-host psqlhms:172.20.1.4 --name hue -it sciencepal/hadoop_cluster:hue
-  # docker run -d --net hadoopnet --ip 172.20.1.8  -p 8081:8081 --hostname zeppelin --add-host edge:172.20.1.5 --add-host nodemaster:172.20.1.1 --add-host node2:172.20.1.2 --add-host node3:172.20.1.3 --add-host psqlhms:172.20.1.4 --add-host hbase:172.20.1.9 --name zeppelin -it sciencepal/hadoop_cluster:zeppelin
-
+  
   # Format nodemaster
   echo ">> Formatting hdfs ..."
   docker exec -u hadoop -it nodemaster hdfs namenode -format
@@ -119,7 +117,7 @@ if [[ $1 = "uninstall" ]]; then
   stopServices
   docker network rm hadoopnet
   docker ps -a | grep "sciencepal" | awk '{print $1}' | xargs docker rm
-  docker rmi sciencepal/hadoop_cluster:hadoop sciencepal/hadoop_cluster:spark sciencepal/hadoop_cluster:hive sciencepal/hadoop_cluster:postgresql-hms sciencepal/hadoop_cluster:hue sciencepal/hadoop_cluster:edge sciencepal/hadoop_cluster:nifi sciencepal/hadoop_cluster:hbase -f
+  docker rmi sciencepal/hadoop_cluster:hadoop sciencepal/hadoop_cluster:spark sciencepal/hadoop_cluster:hive sciencepal/hadoop_cluster:postgresql-hms sciencepal/hadoop_cluster:hue sciencepal/hadoop_cluster:edge sciencepal/hadoop_cluster:hbase -f
   exit
 fi
 

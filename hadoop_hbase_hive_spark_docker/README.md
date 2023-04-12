@@ -10,9 +10,9 @@ This project in the original repo has 1 master, 2 workers, 1 edge node (with Flu
 
 ## Services
 
-* [Hadoop 3.2.0](http://hadoop.apache.org/docs/r3.2.0/) HDFS in  Distributed (Multi-node) Mode
-* [Hive 2.3.4](http://hive.apache.org/) with HiveServer2
-* [Spark 2.4.5](https://spark.apache.org/docs/2.4.5/) in YARN mode (Spark Scala, and PySpark)
+* [Hadoop 3.3.1](http://hadoop.apache.org/docs/r3.3.1/) HDFS in  Distributed (Multi-node) Mode
+* [Hive 2.3.9](http://hive.apache.org/) with HiveServer2
+* [Spark 3.1.2](https://spark.apache.org/docs/3.1.2/) in YARN mode (Spark Scala, and PySpark)
 * [Hbase 2.4.15](https://hbase.apache.org/)  in Pseudo Distributed Mode on top of HDFS
 
 <br />
@@ -39,13 +39,13 @@ For Spark: Choose Spark version > 2.0 from here https://archive.apache.org/dist/
 
 2. Once all images are built, install/deploye cluster containers with all configurations by **./cluster.sh Install**
 
-3. Once all containers are created/deployed, start cluster by **./cluster.sh start**
+3. Verify the containers running by **docker ps -as**. nodemaster, node2, node3, psqlhms and hbase containers should be running.
 
-4. Verify the containers running by **docker ps -as**. nodemaster, node2, node3, psqlhms and hbase containers should be running.
+4. Enter any container this way: **docker exec -u hadoop -it nodemaster /bin/bash**
 
-5. Enter any container this way: **docker exec -u hadoop -it nodemaster /bin/bash**
+5. Once all work is done, bring down cluster by **./cluster.sh stop**
 
-6. Once all work is done, bring down cluster by **./cluster.sh stop**
+6. Once all containers are created/deployed via install and stopped with the previous command, you can restart cluster keeping the state by **./cluster.sh start**
 
 <br />
 
