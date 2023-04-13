@@ -17,8 +17,6 @@ Also there is available an EDGE node to run code/scripts
 
 **PS** -> HBASE was added in the platform. Nifi, Hue and Zeppelin were disabled to consume less resources.
 
-<<<<<<< HEAD
 **PS2** : Spark and Hadoop are in the version 3 now. for a next step, it will be recreated this Hadoop Ecosystem platform using docker compose (https://docs.docker.com/compose/). The way of this current version is composing throgh scripts.
-=======
-**PS2** : Next steps are to update some components like SPARK to version 3 and also Hive and Hadoop. Also recreate this Hadoop Ecosystem platform using docker compose (https://docs.docker.com/compose/). The way of this current version is composing throgh scripts.
->>>>>>> 155d090ceff7cfb4130a7d9999c99880d3704b9a
+
+**UPDATE** : To have a lighter platform including HBASE service this repo will deploy only Hadoop, Hbase, Zookeeper, Hive, Hive Metastore (PostGresSQL) and Spark only. It is possible to add the other services back, together with Hbase, modifying the script files for build and cluster.
