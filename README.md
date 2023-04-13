@@ -12,7 +12,7 @@
 * [Spark 3.1.2](https://spark.apache.org/docs/3.1.2/) in YARN mode (Spark Scala, and PySpark)
 * [Hbase 2.4.15](https://hbase.apache.org/)  in Pseudo Distributed Mode on top of HDFS
 
-Also there is available an EDGE node to run conde/scripts
+Also there is available an EDGE node to run code/scripts
 
 **PS** -> HBASE was added in the platform. Nifi and Hue were disabled to consume less resources.
 
