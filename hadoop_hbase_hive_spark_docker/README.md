@@ -1,4 +1,4 @@
-# HADOOP HBASE HIVE SPARK DOCKER CONTAINERS
+# HADOOP HBASE HIVE SPARK DOCKER CONTAINERS (MacOS and Linux tested)
 
 Thanks to **Aditya Pal** - I forked his original project/repo (https://github.com/sciencepal/dockers) making some changes having a development/lab Hadoop platform for testing purposes. Also with other contributions like Pedro Glongaron (https://github.com/pedro-glongaron) adding more services to master branch of Aditya Pal docker repo.
 
@@ -11,7 +11,7 @@ This project in the original repo has 1 master, 2 workers, 1 edge node (with Flu
 
 **UPDATE** : To have a lighter platform including HBASE service this repo will deploy only Hadoop, Hbase, Zookeeper, Hive, Hive Metastore (PostGresSQL) and Spark only. It is possible to add the other services back, together with Hbase, modifying the script files for build and cluster.
 
-### This platform was validate with MacOs and Linux, running all the shell scripts. For Windows, using Docker Desktop, it was not totally tested. But the Batch files are present. Also for Windows you can deploy via WSL, but again, you can encounter some issues.
+### This platform was validate with MacOs and Linux, running all the shell scripts. For Windows, using Docker Desktop, it was not totally tested. But the Batch files are present. Also for Windows you can deploy via WSL, but again, you can encounter some issues. Also for windows, before run the build.bat file you must create or add in configs ssh keys id_rsa and id_rsa.pub. You can run via Windows Subsystem for Linux (WSL) ssh-keygen available in the build.sh (bash script).
 
 ### Make sure that you build the Dockerfiles for each components in your local environment. Otherwise you will get an older and not tested version from docker hub repo.
 
