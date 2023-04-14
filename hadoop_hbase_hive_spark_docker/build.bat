@@ -16,14 +16,8 @@ docker build -f ./hive/Dockerfile . -t sciencepal/hadoop_cluster:hive
 REM Hive
 docker build -f ./hbase/Dockerfile . -t sciencepal/hadoop_cluster:hbase
 
-::REM Nifi
-::docker build -f ./nifi/Dockerfile . -t sciencepal/hadoop_cluster:nifi
-
 ::REM Edge
-::docker build -f ./edge/Dockerfile . -t sciencepal/hadoop_cluster:edge
+docker build -f ./edge/Dockerfile . -t sciencepal/hadoop_cluster:edge
 
 ::REM hue
 ::docker build -f ./hue/Dockerfile . -t sciencepal/hadoop_cluster:hue
-
-::REM zeppelin
-::docker build -f ./zeppelin/Dockerfile . -t sciencepal/hadoop_cluster:zeppelin
