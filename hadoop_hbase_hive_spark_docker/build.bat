@@ -1,5 +1,4 @@
 @echo off
-REM Construccion de los Contendores Docker
 
 REM Hadoop build
 docker build -f ./hadoop/Dockerfile . -t sciencepal/hadoop_cluster:hadoop
@@ -16,7 +15,7 @@ docker build -f ./hive/Dockerfile . -t sciencepal/hadoop_cluster:hive
 REM Hive
 docker build -f ./hbase/Dockerfile . -t sciencepal/hadoop_cluster:hbase
 
-::REM Edge
+REM Edge
 docker build -f ./edge/Dockerfile . -t sciencepal/hadoop_cluster:edge
 
 ::REM hue

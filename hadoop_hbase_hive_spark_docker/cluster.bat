@@ -5,19 +5,16 @@ IF "%1"=="install" (
 
   rem Starting Postresql Hive metastore
   ECHO ">> Starting postgresql hive metastore ..."
-  docker run -d --net hadoopnet --ip 172.20.1.4 --hostname psqlhms --name psqlhms -e POSTGRES_PASSWORD=hive -it sciencepal/hadoop_cluster:postgresql-hms
+    docker run -d --net hadoopnet --ip 172.20.1.4 --hostname psqlhms --add-host nodemaster:172.20.1.1 --add-host node2:172.20.1.2 --add-host node3:172.20.1.3 --add-host hbase:172.20.1.9 --name psqlhms -e POSTGRES_PASSWORD=hive -it sciencepal/hadoop_cluster:postgresql-hms
   TIMEOUT /t 5 /nobreak > nul
 
   rem 3 nodes
   ECHO ">> Starting master and worker nodes ..."
-  docker run -d --net hadoopnet --ip 172.20.1.1 -p 8088:8088 --hostname nodemaster --add-host node2:172.20.1.2 --add-host node3:172.20.1.3 --add-host hbase:172.20.1.9 --name nodemaster -it sciencepal/hadoop_cluster:hive
+  docker run -d --net hadoopnet --ip 172.20.1.1 -p 4040:4040 -p 8088:8088 -p 50070:50070 -p 8080:8080 -p 18080:18080 --hostname nodemaster --add-host node2:172.20.1.2 --add-host node3:172.20.1.3 --add-host hbase:172.20.1.9 --name nodemaster -it sciencepal/hadoop_cluster:hive
   docker run -d --net hadoopnet --ip 172.20.1.2 --hostname node2 --add-host nodemaster:172.20.1.1 --add-host node3:172.20.1.3 --add-host hbase:172.20.1.9 --name node2 -it sciencepal/hadoop_cluster:spark
   docker run -d --net hadoopnet --ip 172.20.1.3 --hostname node3 --add-host nodemaster:172.20.1.1 --add-host node2:172.20.1.2 --add-host hbase:172.20.1.9 --name node3 -it sciencepal/hadoop_cluster:spark
-  @REM docker run -d --net hadoopnet --ip 172.20.1.5 --hostname edge --add-host nodemaster:172.20.1.1 --add-host node2:172.20.1.2 --add-host node3:172.20.1.3 --add-host psqlhms:172.20.1.4 --add-host hbase:172.20.1.9 --name edge -it sciencepal/hadoop_cluster:edge
-  docker run -d --net hadoopnet --ip 172.20.1.9 -p 16010:16010 --hostname hbase --add-host nodemaster:172.20.1.1 --add-host node2:172.20.1.2 --add-host node3:172.20.1.3 --add-host psqlhms:172.20.1.4 --add-host hbase:172.20.1.9 --name hbase -it sciencepal/hadoop_cluster:hbase
-  @REM docker run -d --net hadoopnet --ip 172.20.1.6 -p 8080:8080 --hostname nifi --add-host nodemaster:172.20.1.1 --add-host node2:172.20.1.2 --add-host node3:172.20.1.3 --add-host psqlhms:172.20.1.4 --name nifi -it sciencepal/hadoop_cluster:nifi
-  @REM docker run -d --net hadoopnet --ip 172.20.1.7  -p 8888:8888 --hostname huenode --add-host edge:172.20.1.5 --add-host nodemaster:172.20.1.1 --add-host node2:172.20.1.2 --add-host node3:172.20.1.3 --add-host psqlhms:172.20.1.4 --name hue -it sciencepal/hadoop_cluster:hue
-  @REM docker run -d --net hadoopnet --ip 172.20.1.8  -p 8081:8081 --hostname zeppelin --add-host edge:172.20.1.5 --add-host nodemaster:172.20.1.1 --add-host node2:172.20.1.2 --add-host node3:172.20.1.3 --add-host psqlhms:172.20.1.4 --name zeppelin -it sciencepal/hadoop_cluster:zeppelin
+  docker run -d --net hadoopnet --ip 172.20.1.5 --hostname edge --add-host nodemaster:172.20.1.1 --add-host node2:172.20.1.2 --add-host node3:172.20.1.3 --add-host psqlhms:172.20.1.4 --add-host hbase:172.20.1.9 --name edge -it sciencepal/hadoop_cluster:edge 
+  docker run -d --net hadoopnet --ip 172.20.1.9 -p 16010:16010 --hostname hbase --add-host nodemaster:172.20.1.1 --add-host node2:172.20.1.2 --add-host node3:172.20.1.3 --add-host psqlhms:172.20.1.4 --add-host hbase:172.20.1.9 --name hbase -it sciencepal/hadoop_cluster:hbase 
 
   rem Format nodemaster
   ECHO ">> Formatting hdfs ..."
@@ -43,7 +40,7 @@ IF "%1"=="uninstall" (
 
 
 IF "%1"=="start" (
-  docker start psqlhms nodemaster node2 node3 edge hue nifi
+  docker start psqlhms nodemaster node2 node3 edge
   call :startServices
   EXIT /B 0
 )
@@ -65,7 +62,7 @@ EXIT /B 0
 
 rem Bring the services up
 :startServices
-docker start nodemaster node2 node3 hbase
+docker start nodemaster node2 node3 hbase edge
 TIMEOUT /t 5 /nobreak > nul
 ECHO ">> Starting hdfs ..."
 docker exec -u hadoop -it nodemaster start-dfs.sh
@@ -73,6 +70,11 @@ TIMEOUT /t 5 /nobreak > nul
 ECHO ">> Starting yarn ..."
 docker exec -u hadoop -d nodemaster start-yarn.sh
 TIMEOUT /t 5 /nobreak > nul
+ECHO ">> Preparing hdfs for SPARK ..."
+  docker exec -u hadoop -it nodemaster hdfs dfs -mkdir -p /spark-jars
+  docker exec -u hadoop -it nodemaster hdfs dfs -mkdir -p /log/spark
+  docker exec -u hadoop -it nodemaster hdfs dfs -chmod g+w /spark-jars
+  docker exec -u hadoop -it nodemaster hdfs dfs -chmod g+w /log/spark
 ECHO ">> Starting MR-JobHistory Server ..."
 docker exec -u hadoop -d nodemaster mr-jobhistory-daemon.sh start historyserver
 TIMEOUT /t 5 /nobreak > nul
@@ -111,7 +113,12 @@ docker exec -u hadoop -d nodemaster hive --service hiveserver2
 ECHO ">> Starting HBASE ..."
 docker exec -u hadoop -d hbase /home/hadoop/hbase-keyscan.sh
 docker exec -u hadoop -d hbase /home/hadoop/hbase/bin/start-hbase.sh
+docker exec -u hadoop -d hbase /home/hadoop/hbase/hbase-thrift-start.sh
 TIMEOUT /t 5 /nobreak > nul
+ECHO ">> Starting kafka & Zookeeper ..."
+docker exec -u hadoop -d edge /home/hadoop/kafka/bin/zookeeper-server-start.sh -daemon  /home/hadoop/kafka/config/zookeeper.properties
+docker exec -u hadoop -d edge /home/hadoop/kafka/bin/kafka-server-start.sh -daemon  /home/hadoop/kafka/config/server.properties
+  
 ECHO "Hadoop info @ nodemaster: http://172.20.1.1:8088/cluster"
 ECHO "DFS Health @ nodemaster : http://172.20.1.1:50070/dfshealth"
 ECHO "MR-JobHistory Server @ nodemaster : http://172.20.1.1:19888"
@@ -120,7 +127,6 @@ ECHO "Spark History Server @ nodemaster : http://172.20.1.1:18080"
 ECHO "Zookeeper @ hbase : http://172.20.1.9:2181"
 @REM ECHO "Kafka @ edge : http://172.20.1.5:9092"
 @REM ECHO "Nifi @ edge : http://172.20.1.5:8080/nifi & from host @ http://localhost:8080/nifi"
-@REM ECHO "Zeppelin @ zeppelin : http://172.20.1.6:8081 & from host @ http://localhost:8081"
 ECHO "HBASE @ hbase : http://172.20.1.9:16010 & from host @ http://localhost:16010"
 EXIT /B 0
 
@@ -134,5 +140,5 @@ docker exec -u hadoop -d hbase /home/hadoop/hbase/bin/stop-hbase.sh
 @REM docker exec -u hadoop -d zeppelin /home/hadoop/zeppelin/bin/zeppelin-daemon.sh stop
 ECHO ">> Stopping containers ..."
 @REM docker stop nodemaster node2 node3 edge hue nifi zeppelin psqlhms
-docker stop nodemaster node2 node3 psqlhms hbase
+docker stop nodemaster node2 node3 psqlhms hbase edge
 EXIT /B 0
