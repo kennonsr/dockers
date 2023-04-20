@@ -1,6 +1,6 @@
 # HADOOP HBASE HIVE SPARK DOCKER CONTAINERS (MacOS and Linux tested)
 
-Thanks to **Aditya Pal** - I forked his original project/repo (https://github.com/sciencepal/dockers) making some changes having a development/lab Hadoop platform for testing purposes. Also with other contributions like Pedro Glongaron (https://github.com/pedro-glongaron) adding more services to master branch of Aditya Pal docker repo.
+Thanks to **Aditya Pal** - I forked his original project/repo (https://github.com/sciencepal/dockers) making some changes having a development/lab Hadoop platform for testing purposes. Also with other contributions like Pedro Glongaron (https://github.com/pedro-glongaron) adding more services to master branch of Aditya Pal docker repo. Components were updated and considerable changes were done to make it work/integrate.
 
 This project in the original repo has 1 master, 2 workers, 1 edge node (with Flume, Sqoop and Kafka !!) , 1 Hue service node, 1 Zeppelin service node and 1 Nifi node.
 
